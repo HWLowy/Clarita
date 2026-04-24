@@ -72,7 +72,7 @@ curl -fsSL https://raw.githubusercontent.com/asi-alliance/OmegaClaw-Core/refs/ta
 
    1) IRC: navigate to website [https://webchat.quakenet.org](https://webchat.quakenet.org/), enter a username for yourself and your exact channel name as during setup (e.g., \#\#omega12345).   
    2) Telegram: navigate to your DM with your bot (e.g. https://t.me/\<botname\>  
-   3) Wait for your agent to download, initialize its processes, and join the chat.
+   3) Wait for your agent to download, initialize its processes, and join the chat. On Telegram, enter the auth token provided during startup in terminal; the agent will not be able to see your messages until you use the token to demonstrate you are the authorized user.
 
 **4. Interact with OmegaClaw:**
 
