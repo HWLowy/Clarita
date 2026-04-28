@@ -21,6 +21,11 @@ ASIONE_CLIENT = _init_openai_client(
     base_url="https://api.asi1.ai/v1"
 )
 
+FRIENDLI_CLIENT = _init_openai_client(
+    var_name="FRIENDLI_API_KEY",
+    base_url="https://api.friendli.ai/serverless/v1"
+)
+
 def _clean(text):
     return text.replace("_quote_", '"').replace("_apostrophe_", "'")
 
@@ -83,6 +88,36 @@ def useAsi1(content):
     )
     resp = resp.replace("</arg_value>", " ").replace("</tool_call>", " ").replace("<arg_value>", " ").replace("<tool_call>", " ")
     return resp
+
+def _chatGlm(client, model, content, max_tokens=6000, **kwargs):
+    spl = content.split(":-:-:-:")
+    try:
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": spl[0]},
+                      {"role": "user",   "content": spl[1] if len(spl) > 1 else ""}],
+            max_tokens=max_tokens,
+            extra_body={
+                "parse_reasoning": True,
+                "chat_template_kwargs": {"enable_thinking": True}
+            },
+            **kwargs
+        )
+        msg = resp.choices[0].message
+        text = (getattr(msg, "content", None) or "").strip()
+        if not text:
+            text = (getattr(msg, "reasoning_content", None) or "").strip()
+        return _clean(text)
+    except Exception as e:
+        print(f"[lib_llm_ext._chatGlm] Exception while communicating with LLM: {e}")
+        return ""
+
+def useGLM(content):
+    return _chatGlm(
+        client=FRIENDLI_CLIENT,
+        model="zai-org/GLM-5.1",
+        content=content
+    )
 
 _embedding_model = None
 
